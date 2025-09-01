@@ -1,4 +1,14 @@
+import csv
+csv.field_size_limit(2147483647)
+
 import time
+
+from DataStructures.List import array_list as lt
+from DataStructures.Queue import queue as q
+from DataStructures.Stack import stack as st
+
+data_dir = os.path.dirname(os.path.realpath('__file__')) + '/Data/'
+
 
 def new_logic():
     """
