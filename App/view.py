@@ -45,6 +45,7 @@ def load_data(control):
     
 
 
+
 def print_data(control, id):
     """
         Función que imprime un dato dado su ID
@@ -52,20 +53,6 @@ def print_data(control, id):
     #TODO: Realizar la función para imprimir un elemento
     pass
 
-def print_req_1(control):
-    """
-        Función que imprime la solución del Requerimiento 1 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 1
-    pass
-
-
-def print_req_2(control):
-    """
-        Función que imprime la solución del Requerimiento 2 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 2
-    pass
 
 
 def print_req_3(control):
