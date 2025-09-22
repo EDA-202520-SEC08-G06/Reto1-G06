@@ -1,16 +1,21 @@
 import sys
 
+import App.logic as lg 
+
+from DataStructures.List import array_list as lt
+
 
 default_limit = 1000
 
 sys.setrecursionlimit(default_limit*10)
 
+
 def new_logic():
     """
         Se crea una instancia del controlador
     """
-    #TODO: Llamar la función de la lógica donde se crean las estructuras de datos
-    pass
+    return lg.new_logic()
+
 
 def print_menu():
     print("Bienvenido")
@@ -29,8 +34,15 @@ def load_data(control):
     """
     Carga los datos
     """
+    print("Iniciando carga de datos...")
+    taxi_count, neighborhood_count, execution_time = logic.load_data(control, 'taxis.csv', 'nyc-neighborhoods.csv')
+    print(f"Se cargaron {taxi_count} viajes en taxi.")
+    print(f"Se cargaron {neighborhood_count} barrios.")
+    print(f"Tiempo de carga: {execution_time} ms.")
+    return control
+
     #TODO: Realizar la carga de datos
-    pass
+    
 
 
 def print_data(control, id):
@@ -60,16 +72,47 @@ def print_req_3(control):
     """
         Función que imprime la solución del Requerimiento 3 en consola
     """
+    
+    low = float(input("Ingrese el valor menor del precio total a filtrar: "))
+    
+    high = float(input("Ingrese el valor mayor del precio total a filtrar: "))
+    
+
+    resultado = logic.req_3(control, low, high)
+    
+
+    for key, value in resultado.items():
+        print(f"{key}: {value}")
+
     # TODO: Imprimir el resultado del requerimiento 3
-    pass
+    
 
 
 def print_req_4(control):
     """
         Función que imprime la solución del Requerimiento 4 en consola
     """
+    
+    filtro_costo = input("Ingrese el filtro de selección de costo ('MAYOR' o 'MENOR'): ")
+    
+    inicio_fecha = input("Ingrese la fecha inicial (YYYY-MM-DD): ")
+    
+    final_fecha = input("Ingrese la fecha final (YYYY-MM-DD): ")
+    
+
+    resultado = logic.req_4(control, filtro_costo, inicio_fecha, final_fecha)
+    
+
+    for key, value in resultado.items():
+        if isinstance(value, dict):
+            print(f"{key}:")
+            for sub_key, sub_value in value.items():
+                print(f"  {sub_key}: {sub_value}")
+        else:
+            print(f"{key}: {value}")
+
     # TODO: Imprimir el resultado del requerimiento 4
-    pass
+
 
 
 def print_req_5(control):
@@ -84,24 +127,29 @@ def print_req_6(control):
     """
         Función que imprime la solución del Requerimiento 6 en consola
     """
+    
+    barrio = input("Ingrese el barrio de inicio: ")
+    
+    inicio_fecha = input("Ingrese la fecha inicial (YYYY-MM-DD): ")
+    
+    fin_fecha = input("Ingrese la fecha final (YYYY-MM-DD): ")
+    
+    
+    resultado = logic.req_6(control, barrio, inicio_fecha, fin_fecha)
+    
+
+    for key, value in resultado.items():
+        if key == 'metodos_pago':
+            print(f"{key}:")
+            for metodo, detalles in value.items():
+                print(f"  {metodo}:")
+                for d_key, d_value in detalles.items():
+                    print(f"    {d_key}: {d_value}")
+        else:
+            print(f"{key}: {value}")
+
     # TODO: Imprimir el resultado del requerimiento 6
-    pass
 
-
-def print_req_7(control):
-    """
-        Función que imprime la solución del Requerimiento 7 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 7
-    pass
-
-
-def print_req_8(control):
-    """
-        Función que imprime la solución del Requerimiento 8 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 8
-    pass
 
 
 # Se crea la lógica asociado a la vista

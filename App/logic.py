@@ -117,23 +117,6 @@ def get_data(catalog, id):
     pass
 
 
-'''
-def req_1(catalog):
-    """
-    Retorna el resultado del requerimiento 1
-    """
-    # TODO: Modificar el requerimiento 1
-    pass
-
-
-def req_2(catalog):
-    """
-    Retorna el resultado del requerimiento 2
-    """
-    # TODO: Modificar el requerimiento 2
-    pass
-'''
-
 
 
 def req_3(catalog, low, high):
@@ -448,9 +431,9 @@ def req_5(catalog):
             if datos['costo_promedio'] > costo_extremo:
                 costo_extremo = datos['costo_promedio']
                 franja_seleccionada = hora
-        elif filtro_costo == "MENOR":
     
-    if datos['costo_promedio'] < costo_extremo:
+        elif filtro_costo == "MENOR":
+            if datos['costo_promedio'] < costo_extremo:
                 costo_extremo = datos['costo_promedio']
                 franja_seleccionada = hora
     
