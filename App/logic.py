@@ -5,8 +5,8 @@ import math
 import time
 import os 
 from DataStructures.List import array_list as lt
-from DataStructures.Queue import queue as q
-from DataStructures.Stack import stack as st
+#from DataStructures.Queue import queue as q
+#from DataStructures.Stack import stack as st
 
 data_dir = os.path.dirname(os.path.realpath('__file__')) + '/Data/'
 
@@ -358,37 +358,121 @@ def req_5(catalog):
     """
     Retorna el resultado del requerimiento 5
     """
+    
     start_time = get_time()
-     
+    
     filtrados_range = lt.new_list()
     
 
     for index in range(lt.size(catalog['taxis'])):
-        
         trip = lt.get_element(catalog['taxis'], index)
         
-        fecha_trip = trip['pickup_datetime'][:10]
-    
+        fecha_viaje = trip['pickup_datetime'][:10]
+        
         if fecha_inicial <= fecha_viaje <= fecha_final:
             lt.add_last(filtrados_range, trip)
     
-    
 
-    if lt.size(trayectos_filtrados) == 0:
+    if lt.size(filtrados_range) == 0:
         end_time = get_time()
         return {'execution_time_ms': delta_time(start_time, end_time),
                 'filtro_costo': filtro_costo,
                 'Observacion': 'No se encontraron trayectos en el rango de fechas especificado'}
     
-
-    total_filtrados = lt.size(trayectos_filtrados)
-
+    total_filtrados = lt.size(filtrados_range)
     
+
     franjas_horarias = {}
 
 
+    for index in range(total_filtrados):
+        trip = lt.get_element(filtrados_range, index)
+        
+        
+        hora_inicio = int(trip['pickup_datetime'][11:13])
+        
+        
+        duracion = calcular_tiempo_minutos(trip['pickup_datetime'], trip['dropoff_datetime'])
+        
+        
+        if hora_inicio not in franjas_horarias:
+            franjas_horarias[hora_inicio] = {
+                'total_costo': 0,
+                'cantidad_trayectos': 0,
+                'total_tiempo': 0,
+                'total_pasajeros': 0,
+                'max_costo': -1,
+                'min_costo': float('inf'),
+                'fecha_max': '',
+                'fecha_min': ''
+            }
+        
+        
+        franjas_horarias[hora_inicio]['total_costo'] += trip['total_amount']
+        franjas_horarias[hora_inicio]['cantidad_trayectos'] += 1
+        franjas_horarias[hora_inicio]['total_tiempo'] += duracion
+        franjas_horarias[hora_inicio]['total_pasajeros'] += trip['passenger_count']
+        
+        
+        if trip['total_amount'] > franjas_horarias[hora_inicio]['max_costo']:
+            franjas_horarias[hora_inicio]['max_costo'] = trip['total_amount']
+            franjas_horarias[hora_inicio]['fecha_max'] = trip['dropoff_datetime']
+        
+    
+        if trip['total_amount'] < franjas_horarias[hora_inicio]['min_costo']:
+            franjas_horarias[hora_inicio]['min_costo'] = trip['total_amount']
+            franjas_horarias[hora_inicio]['fecha_min'] = trip['dropoff_datetime']
+        
+        
+        elif trip['total_amount'] == franjas_horarias[hora_inicio]['max_costo']:
+            if trip['dropoff_datetime'] > franjas_horarias[hora_inicio]['fecha_max']:
+                franjas_horarias[hora_inicio]['fecha_max'] = trip['dropoff_datetime']
+        
+        elif trip['total_amount'] == franjas_horarias[hora_inicio]['min_costo']:
+            if trip['dropoff_datetime'] > franjas_horarias[hora_inicio]['fecha_min']:
+                franjas_horarias[hora_inicio]['min_costo'] = trip['total_amount']
+                franjas_horarias[hora_inicio]['fecha_min'] = trip['dropoff_datetime']
+    
+    
+    for hora, datos in franjas_horarias.items():
+        datos['costo_promedio'] = datos['total_costo'] / datos['cantidad_trayectos']
+        datos['tiempo_promedio'] = datos['total_tiempo'] / datos['cantidad_trayectos']
+        datos['pasajeros_promedio'] = datos['total_pasajeros'] / datos['cantidad_trayectos']
+    
 
-    # TODO: Modificar el requerimiento 5
+    franja_seleccionada = None
+    costo_extremo = -1 if filtro_costo == "MAYOR" else float('inf')
+    
+    for hora, datos in franjas_horarias.items():
+        if filtro_costo == "MAYOR":
+            if datos['costo_promedio'] > costo_extremo:
+                costo_extremo = datos['costo_promedio']
+                franja_seleccionada = hora
+        elif filtro_costo == "MENOR":
+    
+    if datos['costo_promedio'] < costo_extremo:
+                costo_extremo = datos['costo_promedio']
+                franja_seleccionada = hora
+    
+    
+    datos_franja = franjas_horarias[franja_seleccionada]
+    
+    end_time = get_time()
+    
+    respuesta = {
+        'execution_time_ms': delta_time(start_time, end_time),
+        'filtro_costo': filtro_costo,
+        'total_trayectos_filtrados': total_filtrados,
+        'franja_horaria': f'[{franja_seleccionada} - {franja_seleccionada + 1})',
+        'costo_promedio': datos_franja['costo_promedio'],
+        'numero_trayectos': datos_franja['cantidad_trayectos'],
+        'tiempo_promedio_duracion': datos_franja['tiempo_promedio'],
+        'cantidad_promedio_pasajeros': datos_franja['pasajeros_promedio'],
+        'costo_total_mayor': datos_franja['max_costo'],
+        'costo_total_menor': datos_franja['min_costo']
+    }
+    
+    return respuesta    # TODO: Modificar el requerimiento 5
 
 
 
@@ -490,7 +574,7 @@ def req_6(catalog, barrio:str, inicio_fecha, fin_fecha):
     info_metodos = {} # INFO METODOS PAGO A MODO DE DICCIONARIO
     for metodo, datos in metodos_pago.items():
         info_metodos[metodo] = {'tipo_pago': metodo,
-                                'cantidad_trayectos': datos['cantidad']'precio_promedio': datos['total_precio'] / datos['cantidad'],
+                                'cantidad_trayectos': datos['cantidad'],
                                 'precio_promedio': datos['total_precio'] / datos['cantidad'],
                                 'es_mas_recaudo': metodo == metodo_mayor_recaudo,
                                 'tiempo_promedio': datos['total_tiempo'] / datos['cantidad']}
